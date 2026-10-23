@@ -29,6 +29,7 @@ Three files, no dependencies, no bundler:
   - Game loop uses `requestAnimationFrame`; `dropInterval` controls fall speed.
   - `clearLines()` scans bottom-up, splices full rows, and unshifts empty ones.
   - Hold (Shift): `holdPiece()` stores the current piece type in `hold` (drawn in `<canvas id="hold-canvas">`) or swaps it with the stored one; `canHold` limits it to once per piece and is reset in `lockPiece()`. `makePiece(type)` builds a fresh piece at spawn position.
+  - Menú de pausa (P / Escape): `togglePause()` abre/cierra `<div id="pause-menu">` (overlay propio, distinto de `#overlay` del game over) con Reanudar, Reiniciar (`init()`), Ver controles y selector de Nivel inicial (`startLevel`, 1–`MAX_START_LEVEL`). Mientras `paused` es true el keydown va a `pauseMenuKey()` (↑/↓ navegan, ←/→ cambian el nivel, Enter activa) y no llega nada al juego. `init()` usa `startLevel` y `clearLines()` calcula `level = startLevel + floor(lines/10)`.
   - Ghost piece computed via `ghostY` and drawn at `globalAlpha = 0.2`.
   - Speed formula: `max(100, 1000 − (level − 1) × 90)` ms per row.
 
@@ -39,4 +40,5 @@ Three files, no dependencies, no bundler:
 | `COLS` / `ROWS` | 10 / 20 | If changed, update canvas `width`/`height` in `index.html` accordingly (`COLS×BLOCK`, `ROWS×BLOCK`) |
 | `BLOCK` | 30 | Pixels per cell |
 | `LINE_SCORES` | `[0,100,300,500,800]` | Multiplied by current level |
+| `MAX_START_LEVEL` | 10 | Nivel inicial máximo del selector del menú de pausa |
 | `NUT_MIN_LEVEL` / `NUT_CHANCE` | 3 / 0.1 | Level from which the 3×3 hollow "tuerca" piece can spawn, and its per-piece probability |
