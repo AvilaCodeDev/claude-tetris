@@ -61,7 +61,32 @@
       <div class="overlay-box">
         <p id="overlay-title">GAME OVER</p>
         <p id="overlay-score"></p>
+        <div id="name-entry" class="hidden">
+          <label for="name-input">¡Entras en el Top 5! Tu nombre:</label>
+          <div class="name-row">
+            <input id="name-input" type="text" maxlength="12" autocomplete="off" />
+            <button id="name-save" type="button">Guardar</button>
+          </div>
+        </div>
+        <div id="over-records" class="records-block hidden">
+          <span class="label">RÉCORDS</span>
+          <ol class="records-list"></ol>
+          <p class="records-stats">Mejor combo: <b class="records-best-combo">0</b> · Máx. líneas: <b class="records-max-lines">0</b></p>
+          <button type="button" class="records-reset">Resetear récords</button>
+        </div>
         <button id="restart-btn">Reiniciar</button>
+      </div>
+    </div>
+
+    <div id="start-screen" class="overlay">
+      <div class="overlay-box">
+        <p class="start-title">RÉCORDS</p>
+        <div class="records-block">
+          <ol class="records-list"></ol>
+          <p class="records-stats">Mejor combo: <b class="records-best-combo">0</b> · Máx. líneas: <b class="records-max-lines">0</b></p>
+          <button type="button" class="records-reset">Resetear récords</button>
+        </div>
+        <button id="start-btn" type="button">Jugar</button>
       </div>
     </div>
   </div>

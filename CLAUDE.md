@@ -30,6 +30,7 @@ Three files, no dependencies, no bundler:
   - `clearLines()` scans bottom-up, splices full rows, and unshifts empty ones.
   - Hold (Shift): `holdPiece()` stores the current piece type in `hold` (drawn in `<canvas id="hold-canvas">`) or swaps it with the stored one; `canHold` limits it to once per piece and is reset in `lockPiece()`. `makePiece(type)` builds a fresh piece at spawn position.
   - Ghost piece computed via `ghostY` and drawn at `globalAlpha = 0.2`.
+  - Récords locales: top `RECORDS_MAX` en `localStorage['tetris-records']` como `{name, score, lines, combo, date}` (acceso siempre en try/catch). `trackCombo()` (llamado desde `clearLines()`) cuenta piezas consecutivas que limpian línea y guarda `maxCombo`. Al game over `showGameOverRecords()` pide el nombre (`#name-entry`) si la puntuación entra en el top y `renderRecords()` pinta la tabla (resaltando la nueva) en `#start-screen` y `#over-records`, junto a "Mejor combo" y "Máx. líneas". El juego no arranca solo: "Jugar" en `#start-screen` llama a `init()`; `started` bloquea los controles antes de empezar y el handler de teclado ignora los `<input>`.
   - Speed formula: `max(100, 1000 − (level − 1) × 90)` ms per row.
 
 ## Key constants in `game.js`
@@ -39,4 +40,5 @@ Three files, no dependencies, no bundler:
 | `COLS` / `ROWS` | 10 / 20 | If changed, update canvas `width`/`height` in `index.html` accordingly (`COLS×BLOCK`, `ROWS×BLOCK`) |
 | `BLOCK` | 30 | Pixels per cell |
 | `LINE_SCORES` | `[0,100,300,500,800]` | Multiplied by current level |
+| `RECORDS_MAX` / `NAME_MAX` | 5 / 12 | Entradas del top de récords y largo máximo del nombre (el `maxlength` del input en `index.html` debe coincidir) |
 | `NUT_MIN_LEVEL` / `NUT_CHANCE` | 3 / 0.1 | Level from which the 3×3 hollow "tuerca" piece can spawn, and its per-piece probability |
