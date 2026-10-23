@@ -261,3 +261,86 @@ kbd {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* ---- Selector de skin ---- */
+.skin-picker {
+  position: fixed;
+  top: 48px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--label);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.skin-picker select {
+  background: var(--kbd-bg);
+  color: var(--text);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.skin-picker select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---- Skins: fondo y cuadrícula de los canvas ---- */
+/* Neón: tablero negro con resplandor, también en tema claro */
+[data-skin="neon"],
+[data-skin="neon"][data-theme="light"] {
+  --board-bg: #000;
+  --grid: #14181f;
+}
+
+[data-skin="neon"] #board {
+  border-color: #00f0ff;
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.45);
+}
+
+[data-skin="neon"] #next-canvas,
+[data-skin="neon"] #hold-canvas {
+  border-color: #d500f9;
+}
+
+/* Pastel: fondos suaves y esquinas redondeadas */
+[data-skin="pastel"] {
+  --board-bg: #2a2536;
+  --grid: #352f44;
+}
+
+[data-skin="pastel"][data-theme="light"] {
+  --board-bg: #fff7fb;
+  --grid: #f0e4ee;
+}
+
+[data-skin="pastel"] #board,
+[data-skin="pastel"] #next-canvas,
+[data-skin="pastel"] #hold-canvas {
+  border-radius: 14px;
+}
+
+/* Pixel art: fondo azul noche, bordes gruesos y esquinas rectas */
+[data-skin="pixel"] {
+  --board-bg: #10122a;
+  --grid: #1b1e40;
+}
+
+[data-skin="pixel"][data-theme="light"] {
+  --board-bg: #e8ecff;
+  --grid: #cfd5f3;
+}
+
+[data-skin="pixel"] #board,
+[data-skin="pixel"] #next-canvas,
+[data-skin="pixel"] #hold-canvas {
+  border-width: 3px;
+  border-radius: 0;
+}

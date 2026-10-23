@@ -207,26 +207,147 @@ function updateHUD() {
   levelEl.textContent = level;
 }
 
+// ---- Skins (apariencia visual) ----
+// Cada skin: paleta oscura/clara y funciones block/hole que dibujan en píxeles (px, py).
+// El fondo y la cuadrícula del tablero se definen en CSS con [data-skin].
+
+// Las sombras se limpian siempre tras dibujar para que no se filtren a otros trazos
+function clearShadow(context) {
+  context.shadowBlur = 0;
+  context.shadowColor = 'transparent';
+}
+
+function roundedPath(context, x, y, w, h, r) {
+  context.beginPath();
+  context.moveTo(x + r, y);
+  context.arcTo(x + w, y, x + w, y + h, r);
+  context.arcTo(x + w, y + h, x, y + h, r);
+  context.arcTo(x, y + h, x, y, r);
+  context.arcTo(x, y, x + w, y, r);
+  context.closePath();
+}
+
+function strokeHole(context, px, py, size, color) {
+  context.strokeStyle = color;
+  context.lineWidth = 2;
+  context.strokeRect(px + 3, py + 3, size - 6, size - 6);
+}
+
+const NEON_COLORS = [null, '#00f0ff', '#ffee00', '#d500f9', '#39ff14', '#ff1744', '#2979ff', '#ff9100', '#cfd8dc'];
+const PASTEL_COLORS = [null, '#a8e6ef', '#fff1a8', '#d9b8f0', '#b5ead7', '#ffb3ba', '#b5d0ff', '#ffd6a5', '#d5dde2'];
+const PASTEL_COLORS_LIGHT = [null, '#7fcfdc', '#f5d86a', '#c39be6', '#8fd6b8', '#f58f9a', '#8fb5f5', '#f5b97a', '#aab8c0'];
+const PIXEL_COLORS = [null, '#3cbcfc', '#fcd838', '#b858f8', '#58d854', '#f83800', '#6888fc', '#fc9838', '#a8a8b8'];
+const PIXEL_COLORS_LIGHT = [null, '#0078f8', '#e0a800', '#8800cc', '#00a800', '#d82800', '#0058f8', '#e45c10', '#686878'];
+
+const SKINS = {
+  retro: {
+    label: 'Retro',
+    colors: { dark: COLORS, light: COLORS_LIGHT },
+    block(context, px, py, size, color) {
+      context.fillStyle = color;
+      context.fillRect(px + 1, py + 1, size - 2, size - 2);
+      context.fillStyle = 'rgba(255,255,255,0.12)';
+      context.fillRect(px + 1, py + 1, size - 2, 4);
+    },
+    hole: strokeHole,
+  },
+  neon: {
+    label: 'Neón',
+    colors: { dark: NEON_COLORS, light: NEON_COLORS }, // el tablero siempre es negro
+    block(context, px, py, size, color) {
+      const a = context.globalAlpha;
+      context.shadowColor = color;
+      context.shadowBlur = size * 0.6;
+      context.fillStyle = '#000';
+      context.fillRect(px + 3, py + 3, size - 6, size - 6);
+      context.strokeStyle = color;
+      context.lineWidth = 2;
+      context.strokeRect(px + 3, py + 3, size - 6, size - 6);
+      clearShadow(context);
+      context.globalAlpha = a * 0.35; // relleno tenue del color
+      context.fillStyle = color;
+      context.fillRect(px + 3, py + 3, size - 6, size - 6);
+      context.globalAlpha = a;
+    },
+    hole(context, px, py, size, color) {
+      context.shadowColor = color;
+      context.shadowBlur = size * 0.4;
+      strokeHole(context, px, py, size, color);
+      clearShadow(context);
+    },
+  },
+  pastel: {
+    label: 'Pastel',
+    colors: { dark: PASTEL_COLORS, light: PASTEL_COLORS_LIGHT },
+    block(context, px, py, size, color) {
+      context.fillStyle = color;
+      roundedPath(context, px + 1.5, py + 1.5, size - 3, size - 3, size * 0.3);
+      context.fill();
+      // brillo suave arriba
+      context.fillStyle = 'rgba(255,255,255,0.4)';
+      roundedPath(context, px + size * 0.2, py + size * 0.15, size * 0.45, size * 0.14, size * 0.07);
+      context.fill();
+    },
+    hole(context, px, py, size, color) {
+      context.strokeStyle = color;
+      context.lineWidth = 2;
+      roundedPath(context, px + 4, py + 4, size - 8, size - 8, size * 0.2);
+      context.stroke();
+    },
+  },
+  pixel: {
+    label: 'Pixel art',
+    colors: { dark: PIXEL_COLORS, light: PIXEL_COLORS_LIGHT },
+    block(context, px, py, size, color) {
+      const inner = size - 2, p = inner / 6; // celda de "píxel"
+      context.fillStyle = color;
+      context.fillRect(px + 1, py + 1, inner, inner);
+      // trama de ajedrez
+      context.fillStyle = 'rgba(0,0,0,0.14)';
+      for (let i = 0; i < 6; i++)
+        for (let j = 0; j < 6; j++)
+          if ((i + j) % 2 === 0) context.fillRect(px + 1 + i * p, py + 1 + j * p, p, p);
+      // biseles: luz arriba/izquierda, sombra abajo/derecha
+      context.fillStyle = 'rgba(255,255,255,0.55)';
+      context.fillRect(px + 1, py + 1, inner, p);
+      context.fillRect(px + 1, py + 1, p, inner);
+      context.fillStyle = 'rgba(0,0,0,0.45)';
+      context.fillRect(px + 1, py + 1 + inner - p, inner, p);
+      context.fillRect(px + 1 + inner - p, py + 1, p, inner);
+    },
+    hole(context, px, py, size, color) {
+      const p = Math.floor(size / 6);
+      context.fillStyle = color;
+      // marco de píxeles alrededor del hueco
+      context.fillRect(px + 3, py + 3, size - 6, p);
+      context.fillRect(px + 3, py + size - 3 - p, size - 6, p);
+      context.fillRect(px + 3, py + 3, p, size - 6);
+      context.fillRect(px + size - 3 - p, py + 3, p, size - 6);
+    },
+  },
+};
+
+let skin = 'retro';
+
+function skinColor(colorIndex) {
+  return SKINS[skin].colors[theme === 'light' ? 'light' : 'dark'][colorIndex];
+}
+// ---- Fin skins ----
+
 function drawBlock(context, x, y, colorIndex, size, alpha) {
   if (!colorIndex) return;
-  const color = (theme === 'light' ? COLORS_LIGHT : COLORS)[colorIndex];
+  context.save(); // aísla sombras/estilos de la skin
   context.globalAlpha = alpha ?? 1;
-  context.fillStyle = color;
-  context.fillRect(x * size + 1, y * size + 1, size - 2, size - 2);
-  // highlight
-  context.fillStyle = 'rgba(255,255,255,0.12)';
-  context.fillRect(x * size + 1, y * size + 1, size - 2, 4);
-  context.globalAlpha = 1;
+  SKINS[skin].block(context, x * size, y * size, size, skinColor(colorIndex));
+  context.restore();
 }
 
 // Contorno del hueco cuadrado central de la tuerca
 function drawNutHole(context, x, y, size, alpha) {
-  const color = (theme === 'light' ? COLORS_LIGHT : COLORS)[NUT];
+  context.save();
   context.globalAlpha = alpha ?? 1;
-  context.strokeStyle = color;
-  context.lineWidth = 2;
-  context.strokeRect(x * size + 3, y * size + 3, size - 6, size - 6);
-  context.globalAlpha = 1;
+  SKINS[skin].hole(context, x * size, y * size, size, skinColor(NUT));
+  context.restore();
 }
 
 function drawGrid() {
@@ -404,5 +525,33 @@ themeToggle.addEventListener('click', () => {
 let savedTheme = 'dark';
 try { savedTheme = localStorage.getItem('theme') || 'dark'; } catch (_) {}
 applyTheme(savedTheme);
+
+// ---- Selector de skin ----
+const skinSelect = document.getElementById('skin-select');
+
+function applySkin(name) {
+  skin = Object.prototype.hasOwnProperty.call(SKINS, name) ? name : 'retro';
+  document.documentElement.dataset.skin = skin;
+  // el CSS de la skin puede cambiar --grid
+  gridColor = getComputedStyle(document.documentElement).getPropertyValue('--grid').trim();
+  skinSelect.value = skin;
+  // el canvas no se repinta solo en pausa / game over ni antes de iniciar
+  if (current && next) { draw(); drawNext(); drawHold(); }
+}
+
+// Las flechas/espacio son del juego: el select no debe cambiar de opción con ellas
+skinSelect.addEventListener('keydown', e => {
+  if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault();
+});
+
+skinSelect.addEventListener('change', () => {
+  applySkin(skinSelect.value);
+  try { localStorage.setItem('skin', skin); } catch (_) {}
+  skinSelect.blur(); // evita que Space/flechas cambien la opción
+});
+
+let savedSkin = 'retro';
+try { savedSkin = localStorage.getItem('skin') || 'retro'; } catch (_) {}
+applySkin(savedSkin);
 
 init();
