@@ -51,6 +51,8 @@ const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
 const nextCanvas = document.getElementById('next-canvas');
 const nextCtx = nextCanvas.getContext('2d');
+const holdCanvas = document.getElementById('hold-canvas');
+const holdCtx = holdCanvas.getContext('2d');
 const scoreEl = document.getElementById('score');
 const linesEl = document.getElementById('lines');
 const levelEl = document.getElementById('level');
@@ -64,18 +66,22 @@ const themeLabel = document.getElementById('theme-label');
 let theme = 'dark';
 let gridColor = '#22222e';
 
-let board, current, next, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
+let board, current, next, hold, canHold, score, lines, level, paused, gameOver, lastTime, dropAccum, dropInterval, animId;
 
 function createBoard() {
   return Array.from({ length: ROWS }, () => new Array(COLS).fill(0));
+}
+
+function makePiece(type) {
+  const shape = PIECES[type].map(row => [...row]);
+  return { type, shape, x: Math.floor(COLS / 2) - Math.floor(shape[0].length / 2), y: 0 };
 }
 
 function randomPiece() {
   const type = level >= NUT_MIN_LEVEL && Math.random() < NUT_CHANCE
     ? NUT
     : Math.floor(Math.random() * 7) + 1;
-  const shape = PIECES[type].map(row => [...row]);
-  return { type, shape, x: Math.floor(COLS / 2) - Math.floor(shape[0].length / 2), y: 0 };
+  return makePiece(type);
 }
 
 function collide(shape, ox, oy) {
@@ -164,7 +170,26 @@ function softDrop() {
 function lockPiece() {
   merge();
   clearLines();
+  canHold = true;
   spawn();
+  drawHold();
+}
+
+// Guarda la pieza actual o la intercambia con la guardada (una vez por pieza)
+function holdPiece() {
+  if (!canHold) return;
+  if (hold === null) {
+    hold = current.type;
+    spawn();
+  } else {
+    const piece = makePiece(hold);
+    if (collide(piece.shape, piece.x, piece.y)) return;
+    hold = current.type;
+    current = piece;
+    dropAccum = 0;
+  }
+  canHold = false;
+  drawHold();
 }
 
 function spawn() {
@@ -245,16 +270,26 @@ function draw() {
   if (current.type === NUT) drawNutHole(ctx, current.x + 1, current.y + 1, BLOCK);
 }
 
-function drawNext() {
+function drawPreview(context, cnv, piece, alpha) {
   const NB = 30;
-  nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
-  const shape = next.shape;
+  context.clearRect(0, 0, cnv.width, cnv.height);
+  if (!piece) return;
+  const shape = piece.shape;
   const offX = Math.floor((4 - shape[0].length) / 2);
   const offY = Math.floor((4 - shape.length) / 2);
   for (let r = 0; r < shape.length; r++)
     for (let c = 0; c < shape[r].length; c++)
-      drawBlock(nextCtx, offX + c, offY + r, shape[r][c], NB);
-  if (next.type === NUT) drawNutHole(nextCtx, offX + 1, offY + 1, NB);
+      drawBlock(context, offX + c, offY + r, shape[r][c], NB, alpha);
+  if (piece.type === NUT) drawNutHole(context, offX + 1, offY + 1, NB, alpha);
+}
+
+function drawNext() {
+  drawPreview(nextCtx, nextCanvas, next);
+}
+
+// Atenuada mientras el hold está bloqueado para la pieza actual
+function drawHold() {
+  drawPreview(holdCtx, holdCanvas, hold === null ? null : makePiece(hold), canHold ? 1 : 0.4);
 }
 
 function endGame() {
@@ -308,8 +343,11 @@ function init() {
   dropInterval = 1000;
   dropAccum = 0;
   lastTime = performance.now();
+  hold = null;
+  canHold = true;
   next = randomPiece();
   spawn();
+  drawHold();
   updateHUD();
   overlay.classList.add('hidden');
   cancelAnimationFrame(animId);
@@ -337,6 +375,10 @@ document.addEventListener('keydown', e => {
       e.preventDefault();
       hardDrop();
       break;
+    case 'ShiftLeft':
+    case 'ShiftRight':
+      holdPiece();
+      break;
   }
   updateHUD();
 });
@@ -350,7 +392,7 @@ function applyTheme(t) {
   themeToggle.setAttribute('aria-checked', String(theme === 'light'));
   themeLabel.textContent = theme === 'light' ? 'CLARO' : 'OSCURO';
   // el canvas no se repinta solo en pausa / game over
-  if (current && next) { draw(); drawNext(); }
+  if (current && next) { draw(); drawNext(); drawHold(); }
 }
 
 themeToggle.addEventListener('click', () => {

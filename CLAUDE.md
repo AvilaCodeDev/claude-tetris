@@ -28,6 +28,7 @@ Three files, no dependencies, no bundler:
   - `collide()` checks bounds and overlap; `tryRotate()` applies wall kicks (±1, ±2 columns).
   - Game loop uses `requestAnimationFrame`; `dropInterval` controls fall speed.
   - `clearLines()` scans bottom-up, splices full rows, and unshifts empty ones.
+  - Hold (Shift): `holdPiece()` stores the current piece type in `hold` (drawn in `<canvas id="hold-canvas">`) or swaps it with the stored one; `canHold` limits it to once per piece and is reset in `lockPiece()`. `makePiece(type)` builds a fresh piece at spawn position.
   - Ghost piece computed via `ghostY` and drawn at `globalAlpha = 0.2`.
   - Speed formula: `max(100, 1000 − (level − 1) × 90)` ms per row.
 
