@@ -29,6 +29,7 @@ Three files, no dependencies, no bundler:
   - Game loop uses `requestAnimationFrame`; `dropInterval` controls fall speed.
   - `clearLines()` scans bottom-up, splices full rows, and unshifts empty ones.
   - Hold (Shift): `holdPiece()` stores the current piece type in `hold` (drawn in `<canvas id="hold-canvas">`) or swaps it with the stored one; `canHold` limits it to once per piece and is reset in `lockPiece()`. `makePiece(type)` builds a fresh piece at spawn position.
+  - Skins: `SKINS` (`retro`, `neon`, `pastel`, `pixel`) define per-theme palettes (`colors.dark/light`, index 1–8) and `block()` / `hole()` draw functions in pixel coords. `drawBlock` / `drawNutHole` delegate to `SKINS[skin]` via `skinColor()`; shadows (neon) are cleared after drawing. Board/hold/next background and grid color come from CSS variables overridden by `[data-skin="…"]` on `<html>` (`applySkin()` re-reads `--grid`). The `<select id="skin-select">` (fixed top-right, below the theme toggle) persists the choice in `localStorage['skin']` and redraws live, even when paused.
   - Ghost piece computed via `ghostY` and drawn at `globalAlpha = 0.2`.
   - Speed formula: `max(100, 1000 − (level − 1) × 90)` ms per row.
 
@@ -39,4 +40,5 @@ Three files, no dependencies, no bundler:
 | `COLS` / `ROWS` | 10 / 20 | If changed, update canvas `width`/`height` in `index.html` accordingly (`COLS×BLOCK`, `ROWS×BLOCK`) |
 | `BLOCK` | 30 | Pixels per cell |
 | `LINE_SCORES` | `[0,100,300,500,800]` | Multiplied by current level |
+| `SKINS` / `skin` | `retro` | Visual skins (`retro`, `neon`, `pastel`, `pixel`); to add one, add an entry with `label`, `colors`, `block`, `hole`, an `<option>` in `index.html` and `[data-skin]` CSS overrides |
 | `NUT_MIN_LEVEL` / `NUT_CHANCE` | 3 / 0.1 | Level from which the 3×3 hollow "tuerca" piece can spawn, and its per-piece probability |
