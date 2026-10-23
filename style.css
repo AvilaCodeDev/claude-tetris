@@ -9,11 +9,29 @@ body {
   color: #e0e0e0;
   font-family: system-ui, -apple-system, sans-serif;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
   user-select: none;
 }
+
+/* ---- Título ---- */
+.title {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 8px;
+  margin-bottom: 16px;
+  padding-left: 8px; /* compensa el letter-spacing final */
+}
+
+.title span:nth-child(1) { color: #e57373; } /* T - Z red */
+.title span:nth-child(2) { color: #ffb74d; } /* E - L orange */
+.title span:nth-child(3) { color: #ffd54f; } /* T - O yellow */
+.title span:nth-child(4) { color: #81c784; } /* R - S green */
+.title span:nth-child(5) { color: #4dd0e1; } /* I - I cyan */
+.title span:nth-child(6) { color: #ba68c8; } /* S - T purple */
 
 .wrapper {
   position: relative;
