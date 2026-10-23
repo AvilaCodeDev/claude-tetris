@@ -38,3 +38,4 @@ Three files, no dependencies, no bundler:
 | `COLS` / `ROWS` | 10 / 20 | If changed, update canvas `width`/`height` in `index.html` accordingly (`COLS×BLOCK`, `ROWS×BLOCK`) |
 | `BLOCK` | 30 | Pixels per cell |
 | `LINE_SCORES` | `[0,100,300,500,800]` | Multiplied by current level |
+| `NUT_MIN_LEVEL` / `NUT_CHANCE` | 3 / 0.1 | Level from which the 3×3 hollow "tuerca" piece can spawn, and its per-piece probability |
