@@ -270,6 +270,9 @@ function loop(ts) {
     }
   }
   draw();
+  // endGame() puede ejecutarse dentro de este mismo frame (lockPiece → spawn);
+  // si se reprogramara aquí, el bucle seguiría vivo tras el game over.
+  if (gameOver) return;
   animId = requestAnimationFrame(loop);
 }
 
