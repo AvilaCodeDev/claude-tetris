@@ -75,18 +75,54 @@ jobs:
 
             Idioma: escribe el comentario en el MISMO idioma en que está escrito el issue.
 
-            Formato del comentario (la primera línea debe ser exactamente el marcador oculto):
+            Formato: el comentario DEBE estar escrito en Markdown compatible con GitHub (GFM)
+            para que se renderice correctamente en el issue:
+            - Usa encabezados con `##` / `###`, y deja SIEMPRE una línea en blanco entre
+              encabezados, párrafos, listas y bloques de código (si no, GitHub los junta en un solo párrafo).
+            - Usa listas con `-` para enumeraciones y `- [ ]` para los criterios de aceptación.
+            - Usa listas numeradas (`1.`) para los pasos de la propuesta de solución.
+            - Escribe nombres de archivos, funciones y constantes entre backticks (`game.js`, `collide()`).
+            - Si incluyes código, usa bloques con triple backtick y el lenguaje (```js).
+            - No uses HTML salvo el marcador oculto inicial.
+
+            Estructura del comentario (la primera línea debe ser exactamente el marcador oculto,
+            seguida de una línea en blanco):
 
             <!-- claude-issue-triage -->
-            ## Diagnóstico automático
-            **Resumen:** qué reporta o solicita el issue.
-            **Tipo:** bug / feature / mejora / pregunta — y los labels asignados.
-            **Análisis / causa probable:** con referencias `archivo:función`.
-            **Archivos y funciones afectados:** lista concreta.
-            **Propuesta de solución:** pasos concretos de implementación.
-            **Riesgos y casos borde:** qué podría romperse.
-            **Criterios de aceptación:** lista verificable.
-            **Preguntas abiertas:** solo si falta información para implementar.
+
+            ## 🤖 Diagnóstico automático
+
+            ### Resumen
+
+            Qué reporta o solicita el issue.
+
+            ### Tipo
+
+            bug / feature / mejora / pregunta — y los labels asignados.
+
+            ### Análisis / causa probable
+
+            Con referencias `archivo:función`.
+
+            ### Archivos y funciones afectados
+
+            - `archivo`: `función()` — por qué se ve afectada.
+
+            ### Propuesta de solución
+
+            1. Paso concreto de implementación.
+
+            ### Riesgos y casos borde
+
+            - Qué podría romperse.
+
+            ### Criterios de aceptación
+
+            - [ ] Criterio verificable.
+
+            ### Preguntas abiertas
+
+            - Solo si falta información para implementar.
 
             No modifiques archivos del repositorio ni abras PRs. Si el issue es ambiguo, dilo
             en "Preguntas abiertas" en lugar de inventar detalles.
